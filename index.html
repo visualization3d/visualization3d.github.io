@@ -28,6 +28,8 @@
     en:{slow:"Slow? You can open the file separately.", link:"Open in a new tab \u2197"}
   };
   function lang(){ return document.documentElement.lang === "en" ? "en" : "ru"; }
+  var phone = false;
+  try{ phone = !!(window.matchMedia && window.matchMedia("(pointer: coarse) and (hover: none)").matches); }catch(e){ phone = false; }
   var box = document.getElementById("pdfbox");
   var frame = document.getElementById("pdfbox-frame");
   var title = document.getElementById("pdfbox-title");
@@ -77,13 +79,14 @@
   Array.prototype.forEach.call(document.querySelectorAll('a.project-pdf[href^="files/"]'), function(link){
     var href = link.getAttribute("href");
     link.addEventListener("click", function(e){
+      if(phone) return;
       e.preventDefault();
       var name = link.querySelector("strong");
       openBox(href, name ? name.textContent : "");
     });
     link.addEventListener("pointerenter", function(ev){ if(!ev.pointerType || ev.pointerType !== "touch") warm(href); });
     link.addEventListener("focus", function(){ warm(href); });
-    link.addEventListener("touchstart", function(){ warm(href); }, {passive:true});
+    if(!phone) link.addEventListener("touchstart", function(){ warm(href); }, {passive:true});
   });
   frame.addEventListener("load", function(){
     if(!box.classList.contains("open")) return;
